@@ -373,13 +373,16 @@ function drawBricks() {
     ctx.strokeRect(b.x + 0.5, b.y + 0.5, b.w - 1, b.h - 1);
     ctx.shadowBlur  = 0;
 
-    // Smiley emoji for bonus bricks
+    // Flag emoji for bonus bricks — white inner label for full flag contrast
     if (b.bonus) {
-      ctx.globalAlpha    = alpha;
-      ctx.font           = '13px serif';
-      ctx.textAlign      = 'center';
-      ctx.textBaseline   = 'middle';
-      ctx.fillText(b.smiley, b.x + b.w / 2, b.y + b.h / 2);
+      ctx.globalAlpha = alpha;
+      const px = 3, py = 2;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(b.x + px, b.y + py, b.w - px * 2, b.h - py * 2);
+      ctx.font          = '14px serif';
+      ctx.textAlign     = 'center';
+      ctx.textBaseline  = 'middle';
+      ctx.fillText(b.smiley, b.x + b.w / 2, b.y + b.h / 2 + 0.5);
     }
 
     ctx.globalAlpha = 1;
