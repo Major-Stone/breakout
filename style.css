@@ -22,6 +22,70 @@ body {
   gap: 8px;
 }
 
+/* Title bar */
+#title-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 4px 10px;
+  background: #111128;
+  border: 1px solid #2a2a5a;
+  border-radius: 4px;
+  gap: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+#title-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(100, 100, 255, 0.03) 0px,
+    rgba(100, 100, 255, 0.03) 1px,
+    transparent 1px,
+    transparent 40px
+  );
+  pointer-events: none;
+}
+
+.title-main {
+  font-size: 42px;
+  font-weight: bold;
+  letter-spacing: 10px;
+  color: #e8e8ff;
+  text-shadow:
+    0 0 6px #fff,
+    0 0 14px #88aaff,
+    0 0 30px #5566ff,
+    0 0 60px #3344cc;
+  animation: marquee-flicker 4s infinite;
+}
+
+.title-accent {
+  color: #ff4488;
+  text-shadow:
+    0 0 6px #fff,
+    0 0 14px #ff88bb,
+    0 0 30px #ff2266,
+    0 0 60px #cc0044;
+}
+
+.title-sub {
+  font-size: 10px;
+  letter-spacing: 5px;
+  color: #5558aa;
+  text-transform: uppercase;
+}
+
+@keyframes marquee-flicker {
+  0%, 92%, 94%, 96%, 100% { opacity: 1; }
+  93%  { opacity: 0.80; }
+  95%  { opacity: 0.95; }
+}
+
 header {
   display: flex;
   justify-content: space-between;
@@ -61,7 +125,7 @@ header {
 /* Overlay */
 #overlay {
   position: absolute;
-  top: 45px; /* below header */
+  top: 121px; /* below title-bar + header */
   left: 0;
   right: 0;
   bottom: 0;
