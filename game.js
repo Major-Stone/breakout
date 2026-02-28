@@ -46,6 +46,11 @@ const ROW_COLORS = [
 // Points per row
 const ROW_POINTS = [7, 5, 4, 3, 2, 1];
 
+// Bonus bricks
+const BONUS_SMILEYS = ['😊', '😎', '🤩', '😜', '🥳', '🤑', '😺', '🤗', '😍'];
+const BONUS_POINTS  = 20;
+const BONUS_CHANCE  = 0.15;
+
 // ─── Audio ────────────────────────────────────────────────────────────────────
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -86,6 +91,11 @@ const sfx = {
   gameOver: () => {
     [400, 320, 240, 160].forEach((f, i) => {
       setTimeout(() => playTone({ freq: f, type: 'sawtooth', vol: 0.20, duration: 0.18 }), i * 130);
+    });
+  },
+  bonus: () => {
+    [880, 1320, 1760].forEach((f, i) => {
+      setTimeout(() => playTone({ freq: f, type: 'sine', vol: 0.18, duration: 0.10 }), i * 55);
     });
   },
 };
@@ -132,8 +142,10 @@ function makeBricks() {
       const x = BRICK_GAP + c * (BRICK_W + BRICK_GAP);
       const y = BRICK_TOP + r * (BRICK_H + BRICK_GAP);
       // Higher levels add extra hit points to some bricks
-      const maxHp = (level >= 3 && r < 2) ? 2 : 1;
-      list.push({ x, y, w: BRICK_W, h: BRICK_H, hp: maxHp, maxHp, row: r, col: c, alive: true });
+      const maxHp  = (level >= 3 && r < 2) ? 2 : 1;
+      const isBonus = Math.random() < BONUS_CHANCE;
+      const smiley  = isBonus ? BONUS_SMILEYS[Math.floor(Math.random() * BONUS_SMILEYS.length)] : null;
+      list.push({ x, y, w: BRICK_W, h: BRICK_H, hp: maxHp, maxHp, row: r, col: c, alive: true, bonus: isBonus, smiley });
     }
   }
   return list;
@@ -284,10 +296,12 @@ function moveBall() {
       b.hp--;
       if (b.hp <= 0) {
         b.alive = false;
-        score  += ROW_POINTS[b.row];
+        score  += ROW_POINTS[b.row] + (b.bonus ? BONUS_POINTS : 0);
         updateHUD();
+        if (b.bonus) sfx.bonus(); else sfx.brick();
+      } else {
+        sfx.brick();
       }
-      sfx.brick();
 
       // Reflect ball
       const overlapX = ball.r - Math.abs(dx);
@@ -328,10 +342,12 @@ function drawBackground() {
 }
 
 function drawBricks() {
+  const pulse = 0.5 + 0.5 * Math.sin(Date.now() / 180); // 0..1, used for bonus glow
+
   for (const b of bricks) {
     if (!b.alive) continue;
 
-    const color = ROW_COLORS[b.row];
+    const color = b.bonus ? '#ffd700' : ROW_COLORS[b.row];
 
     // Damaged bricks are darker
     const alpha = b.maxHp > 1 && b.hp < b.maxHp ? 0.55 : 1;
@@ -343,18 +359,28 @@ function drawBricks() {
 
     // Shine
     const grad = ctx.createLinearGradient(b.x, b.y, b.x, b.y + b.h);
-    grad.addColorStop(0, 'rgba(255,255,255,0.25)');
+    grad.addColorStop(0, b.bonus ? 'rgba(255,255,220,0.45)' : 'rgba(255,255,255,0.25)');
     grad.addColorStop(1, 'rgba(0,0,0,0.15)');
     ctx.fillStyle = grad;
     ctx.fillRect(b.x, b.y, b.w, b.h);
 
-    // Glow
-    ctx.shadowColor = color;
-    ctx.shadowBlur  = 6;
-    ctx.strokeStyle = color;
-    ctx.lineWidth   = 1;
+    // Glow — bonus bricks pulse
+    const glowSize = b.bonus ? 8 + pulse * 8 : 6;
+    ctx.shadowColor = b.bonus ? `rgba(255, ${180 + Math.floor(pulse * 75)}, 0, 1)` : color;
+    ctx.shadowBlur  = glowSize;
+    ctx.strokeStyle = b.bonus ? '#ffaa00' : color;
+    ctx.lineWidth   = b.bonus ? 1.5 : 1;
     ctx.strokeRect(b.x + 0.5, b.y + 0.5, b.w - 1, b.h - 1);
     ctx.shadowBlur  = 0;
+
+    // Smiley emoji for bonus bricks
+    if (b.bonus) {
+      ctx.globalAlpha    = alpha;
+      ctx.font           = '12px serif';
+      ctx.textAlign      = 'center';
+      ctx.textBaseline   = 'middle';
+      ctx.fillText(b.smiley, b.x + b.w / 2, b.y + b.h / 2);
+    }
 
     ctx.globalAlpha = 1;
   }
