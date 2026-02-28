@@ -46,6 +46,50 @@ const ROW_COLORS = [
 // Points per row
 const ROW_POINTS = [7, 5, 4, 3, 2, 1];
 
+// ─── Audio ────────────────────────────────────────────────────────────────────
+
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playTone({ freq = 440, freq2 = null, type = 'square', vol = 0.18, duration = 0.08, attack = 0.005, decay = 0.05 } = {}) {
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const now = audioCtx.currentTime;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, now);
+  if (freq2 !== null) osc.frequency.linearRampToValueAtTime(freq2, now + duration);
+
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(vol, now + attack);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+  osc.start(now);
+  osc.stop(now + duration + 0.02);
+}
+
+const sfx = {
+  wall:    () => playTone({ freq: 480,  type: 'square',   vol: 0.12, duration: 0.06 }),
+  paddle:  () => playTone({ freq: 300,  freq2: 420, type: 'square', vol: 0.18, duration: 0.09 }),
+  brick:   () => playTone({ freq: 600,  freq2: 500, type: 'square', vol: 0.15, duration: 0.07 }),
+  loseLife: () => {
+    playTone({ freq: 300, freq2: 120, type: 'sawtooth', vol: 0.22, duration: 0.35 });
+  },
+  levelUp: () => {
+    [523, 659, 784, 1047].forEach((f, i) => {
+      setTimeout(() => playTone({ freq: f, type: 'sine', vol: 0.20, duration: 0.15 }), i * 100);
+    });
+  },
+  gameOver: () => {
+    [400, 320, 240, 160].forEach((f, i) => {
+      setTimeout(() => playTone({ freq: f, type: 'sawtooth', vol: 0.20, duration: 0.18 }), i * 130);
+    });
+  },
+};
+
 // ─── State ────────────────────────────────────────────────────────────────────
 let state      = 'idle';   // 'idle' | 'playing' | 'paused' | 'dead' | 'win' | 'gameover'
 let score      = 0;
@@ -146,8 +190,10 @@ function loseLife() {
   updateHUD();
   if (lives <= 0) {
     state = 'gameover';
+    sfx.gameOver();
     showOverlay('GAME OVER', `Final score: <strong>${score}</strong>`, 'PLAY AGAIN');
   } else {
+    sfx.loseLife();
     // Reset ball/paddle only
     ball = {
       x:  W / 2,
@@ -188,13 +234,16 @@ function moveBall() {
   if (ball.x - ball.r < 0) {
     ball.x  = ball.r;
     ball.vx = Math.abs(ball.vx);
+    sfx.wall();
   } else if (ball.x + ball.r > W) {
     ball.x  = W - ball.r;
     ball.vx = -Math.abs(ball.vx);
+    sfx.wall();
   }
   if (ball.y - ball.r < 0) {
     ball.y  = ball.r;
     ball.vy = Math.abs(ball.vy);
+    sfx.wall();
   }
 
   // Fell below paddle
@@ -219,6 +268,7 @@ function moveBall() {
     ball.vy = -Math.abs(sp * Math.cos(ang));
     ball.vx = sp * Math.sin(ang);
     ball.y  = paddle.y - ball.r - 1;
+    sfx.paddle();
   }
 
   // Brick collisions
@@ -237,6 +287,7 @@ function moveBall() {
         score  += ROW_POINTS[b.row];
         updateHUD();
       }
+      sfx.brick();
 
       // Reflect ball
       const overlapX = ball.r - Math.abs(dx);
@@ -253,6 +304,7 @@ function moveBall() {
   // Win condition
   if (bricks.every(b => !b.alive)) {
     state = 'win';
+    sfx.levelUp();
     showOverlay(`LEVEL ${level} CLEAR!`, `Score: <strong>${score}</strong>`, level < 5 ? 'NEXT LEVEL' : 'PLAY AGAIN');
   }
 }
