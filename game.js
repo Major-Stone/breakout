@@ -47,7 +47,7 @@ const ROW_COLORS = [
 const ROW_POINTS = [7, 5, 4, 3, 2, 1];
 
 // Bonus bricks
-const BONUS_SMILEYS = ['😊', '😎', '🤩', '😜', '🥳', '🤑', '😺', '🤗', '😍'];
+const BONUS_SMILEYS = ['🇳🇱', '🇩🇪', '🇫🇷', '🇬🇧', '🇺🇸', '🇧🇪', '🇮🇹', '🇪🇸', '🇯🇵', '🇧🇷'];
 const BONUS_POINTS  = 20;
 const BONUS_CHANCE  = 0.15;
 
@@ -376,7 +376,7 @@ function drawBricks() {
     // Smiley emoji for bonus bricks
     if (b.bonus) {
       ctx.globalAlpha    = alpha;
-      ctx.font           = '12px serif';
+      ctx.font           = '13px serif';
       ctx.textAlign      = 'center';
       ctx.textBaseline   = 'middle';
       ctx.fillText(b.smiley, b.x + b.w / 2, b.y + b.h / 2);
