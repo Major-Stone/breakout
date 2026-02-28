@@ -1,0 +1,123 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #0a0a1a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: 'Courier New', Courier, monospace;
+  color: #fff;
+  user-select: none;
+}
+
+#game-wrapper {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 4px;
+  background: #111128;
+  border: 1px solid #2a2a5a;
+  border-radius: 4px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+}
+
+.label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #7070cc;
+}
+
+.stat span:last-child {
+  font-size: 18px;
+  font-weight: bold;
+  color: #e0e0ff;
+  letter-spacing: 1px;
+}
+
+#canvas {
+  display: block;
+  background: #0d0d22;
+  border: 1px solid #2a2a5a;
+  border-radius: 4px;
+}
+
+/* Overlay */
+#overlay {
+  position: absolute;
+  top: 45px; /* below header */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 10, 26, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+#overlay.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+#overlay-content {
+  text-align: center;
+  padding: 32px;
+}
+
+#overlay-title {
+  font-size: 52px;
+  letter-spacing: 8px;
+  color: #fff;
+  text-shadow:
+    0 0 10px #6666ff,
+    0 0 30px #4444cc;
+  margin-bottom: 20px;
+}
+
+#overlay-msg {
+  font-size: 13px;
+  color: #aaaaee;
+  line-height: 1.7;
+  margin-bottom: 28px;
+  letter-spacing: 0.5px;
+}
+
+#overlay-btn {
+  background: transparent;
+  color: #88aaff;
+  border: 2px solid #88aaff;
+  padding: 12px 36px;
+  font-family: inherit;
+  font-size: 15px;
+  letter-spacing: 3px;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+#overlay-btn:hover {
+  background: #88aaff;
+  color: #0a0a1a;
+  box-shadow: 0 0 16px #88aaff88;
+}

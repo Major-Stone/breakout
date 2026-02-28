@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Breakout</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="game-wrapper">
+    <header>
+      <div class="stat"><span class="label">SCORE</span><span id="score">0</span></div>
+      <div class="stat"><span class="label">LEVEL</span><span id="level">1</span></div>
+      <div class="stat"><span class="label">LIVES</span><span id="lives">&#9679;&#9679;&#9679;</span></div>
+    </header>
+
+    <canvas id="canvas" width="480" height="520"></canvas>
+
+    <div id="overlay" class="visible">
+      <div id="overlay-content">
+        <h1 id="overlay-title">BREAKOUT</h1>
+        <p id="overlay-msg">Use ← → arrow keys or A / D to move the paddle.<br>Press <strong>Space</strong> to launch the ball.</p>
+        <button id="overlay-btn">START GAME</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
