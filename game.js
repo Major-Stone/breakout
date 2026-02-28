@@ -347,7 +347,7 @@ function drawBricks() {
   for (const b of bricks) {
     if (!b.alive) continue;
 
-    const color = b.bonus ? '#ffd700' : ROW_COLORS[b.row];
+    const color = b.bonus ? '#000000' : ROW_COLORS[b.row];
 
     // Damaged bricks are darker
     const alpha = b.maxHp > 1 && b.hp < b.maxHp ? 0.55 : 1;
@@ -359,7 +359,7 @@ function drawBricks() {
 
     // Shine
     const grad = ctx.createLinearGradient(b.x, b.y, b.x, b.y + b.h);
-    grad.addColorStop(0, b.bonus ? 'rgba(255,255,220,0.45)' : 'rgba(255,255,255,0.25)');
+    grad.addColorStop(0, b.bonus ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.25)');
     grad.addColorStop(1, 'rgba(0,0,0,0.15)');
     ctx.fillStyle = grad;
     ctx.fillRect(b.x, b.y, b.w, b.h);
@@ -368,7 +368,7 @@ function drawBricks() {
     const glowSize = b.bonus ? 8 + pulse * 8 : 6;
     ctx.shadowColor = b.bonus ? `rgba(255, ${180 + Math.floor(pulse * 75)}, 0, 1)` : color;
     ctx.shadowBlur  = glowSize;
-    ctx.strokeStyle = b.bonus ? '#ffaa00' : color;
+    ctx.strokeStyle = b.bonus ? '#ff8800' : color;
     ctx.lineWidth   = b.bonus ? 1.5 : 1;
     ctx.strokeRect(b.x + 0.5, b.y + 0.5, b.w - 1, b.h - 1);
     ctx.shadowBlur  = 0;
